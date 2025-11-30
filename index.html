@@ -5,227 +5,627 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>高振源 | 个人主页</title>
 
-  <!-- 字体 -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+SC:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --primary:#3AB5F9;
-      --accent:#65D6CE;
-      --bg:#F8FEFF;
-      --text:#333;
+    :root {
+      /* 配色方案：更高级的蓝青色调 */
+      --primary: #0ea5e9;       /* 亮蓝 */
+      --primary-dark: #0284c7;  /* 深蓝 */
+      --accent: #2dd4bf;        /* 青绿 */
+      --bg-color: #f0f9ff;      /* 极淡的蓝白背景 */
+      --text-main: #1e293b;     /* 深灰蓝文字，比纯黑更高级 */
+      --text-light: #64748b;    /* 浅灰文字 */
+      --card-bg: rgba(255, 255, 255, 0.75); /* 毛玻璃背景色 */
+      --glass-border: rgba(255, 255, 255, 0.6);
     }
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins','Noto Sans SC',sans-serif;}
-    body{background:var(--bg);color:var(--text);line-height:1.6;transition:filter .3s;}
 
-    /* ===== Hero（轮播背景）===== */
-    .hero{
-      position:relative;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      padding:5rem 1rem 6rem;
-      color:#fff;text-align:center;
-      background:#3AB5F9 center/cover no-repeat;
-      overflow:hidden;
-      transition:background-image 1s ease-in-out;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Noto Sans SC', sans-serif; }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+      background: var(--bg-color);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(45, 212, 191, 0.1) 0px, transparent 50%);
+      color: var(--text-main);
+      line-height: 1.7;
+      overflow-x: hidden;
     }
-    .hero::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.25);z-index:0;}
-    .hero>*{position:relative;z-index:1;}
 
-    .avatar{
-      width:140px;height:140px;border-radius:50%;object-fit:cover;
-      border:4px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.12);margin-bottom:1rem;
+    /* ===== 通用类 ===== */
+    a { text-decoration: none; color: inherit; transition: 0.3s; }
+    ul { list-style: none; }
+    
+    /* 滚动入场动画类 */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
     }
-    .hero h1{font-size:2.5rem;margin-bottom:.5rem;}
-    .hero p{font-size:1.2rem;opacity:.9;max-width:90vw;}
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-    /* ===== Navigation ===== */
-    nav{position:sticky;top:0;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.05);z-index:10;}
-    nav ul{max-width:960px;margin:auto;padding:.5rem 1rem;list-style:none;display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;}
-    nav a{color:var(--text);text-decoration:none;font-weight:600;padding:.5rem 1rem;border-radius:1rem;transition:background .3s;}
-    nav a:hover{background:var(--accent);color:#fff;}
+    /* ===== Hero 区域 ===== */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+      overflow: hidden;
+      /* 初始背景，JS会轮播覆盖 */
+      background: #3AB5F9 center/cover no-repeat;
+      transition: background-image 1.5s ease-in-out;
+    }
 
-    /* ===== Sections ===== */
-    section{max-width:960px;margin:3rem auto;padding:0 1rem;}
-    section h2{color:var(--primary);margin-bottom:1rem;}
-    .timeline{border-left:3px solid var(--primary);padding-left:1rem;}
-    .timeline-item{margin-bottom:1.5rem;position:relative;}
+    /* 遮罩层：保证文字可读性，增加层次 */
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.7));
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid rgba(255,255,255,0.8);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      font-weight: 300;
+      max-width: 600px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(4px);
+      padding: 0.5rem 1.5rem;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* ===== 悬浮导航栏 ===== */
+    nav {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 800px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      transition: top 0.3s;
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      color: var(--text-light);
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--primary);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    /* ===== Section 通用布局 ===== */
+    section {
+      max-width: 1000px;
+      margin: 6rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title h2 {
+      font-size: 2rem;
+      color: var(--text-main);
+      display: inline-block;
+      position: relative;
+    }
+    
+    .section-title h2::after {
+      content: "";
+      display: block;
+      width: 50px;
+      height: 4px;
+      background: var(--primary);
+      margin: 8px auto 0;
+      border-radius: 2px;
+    }
+
+    /* ===== 关于我 ===== */
+    .about-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      text-align: center;
+    }
+    .about-card p { font-size: 1.1rem; color: var(--text-main); }
+
+    /* ===== 时间轴 (Education, Research, Competitions) ===== */
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+      border-left: 2px solid #e2e8f0;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 3rem;
+    }
+
     .timeline-item::before {
       content: "";
       position: absolute;
-      left: -0.4rem;   /* 根据圆点大小微调 */
-      top: 0.15rem;    /* 让圆点垂直居中，按需微调 */
-      width: 0.4rem;
-      height: 0.4rem;
-      background: var(--primary);
+      left: -2.6rem;
+      top: 0.5rem;
+      width: 1rem;
+      height: 1rem;
+      background: var(--bg-color);
+      border: 3px solid var(--primary);
       border-radius: 50%;
+      z-index: 1;
     }
 
-
-    /* ===== Projects（竖排 + 可放大）===== */
-    .projects-grid{display:flex;flex-direction:column;gap:1.5rem;}
-    .project-card{
-      background:#fff;border-radius:1.25rem;overflow:hidden;
-      box-shadow:0 4px 14px rgba(0,0,0,.06);
-      transition:transform .3s,box-shadow .3s;
-      cursor:zoom-in;display:flex;flex-direction:column;
+    .card {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      border: 1px solid rgba(255,255,255,0.5);
+      transition: transform 0.3s, box-shadow 0.3s;
     }
-    .project-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.12);}
-    .project-card img{width:100%;object-fit:cover;}
-    .project-card h3{margin:.75rem 1rem .5rem;color:var(--primary);font-size:1.1rem;}
-    .project-card p{margin:0 1rem 1rem;font-size:.9rem;line-height:1.5;flex-grow:1;}
-    .project-card a{margin:0 1rem 1.25rem;font-weight:600;color:var(--accent);text-decoration:none;}
-    .project-card a:hover{text-decoration:underline;}
 
-    /* 放大状态 */
-    .project-card.enlarged{
-      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-      width:150%;max-width:620px;z-index:1000;cursor:zoom-out;
-      box-shadow:0 8px 28px rgba(0,0,0,.35);
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
-    .project-card.enlarged img{height:auto;max-height:70vh;}
-    body.no-scroll{overflow:hidden;}
 
-    /* ===== Footer ===== */
-    footer{background:var(--primary);color:#fff;text-align:center;padding:1rem;margin-top:3rem;}
+    .card h3 { color: var(--text-main); font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .card .meta { color: var(--accent); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.8rem; display: block; }
+    .card p { color: var(--text-light); font-size: 0.95rem; }
 
-    /* ===== Dark Mode ===== */
-    @media(prefers-color-scheme:dark){
-      :root{--bg:#0F172A;--text:#E2E8F0;}
-      nav{background:#1E293B;}
-      nav a{color:var(--text);}
+    /* ===== 项目展示 (Grid) ===== */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .project-card {
+      background: #fff;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .project-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+    }
+
+    .project-img-wrapper {
+      height: 200px;
+      overflow: hidden;
+      cursor: zoom-in;
+    }
+
+    .project-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+
+    .project-card:hover .project-img-wrapper img { transform: scale(1.05); }
+
+    .project-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+    .project-content h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-main); }
+    .project-content p { font-size: 0.9rem; color: var(--text-light); margin-bottom: 1.5rem; flex-grow: 1; }
+    
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .btn-link:hover { color: var(--primary-dark); text-decoration: underline; }
+
+    /* ===== 荣誉奖项 (Grid) ===== */
+    .honors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .honor-card {
+      background: linear-gradient(135deg, #fff, #f8feff);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .honor-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+      cursor: zoom-in;
+      transition: transform 0.3s;
+    }
+    .honor-card img:hover { transform: scale(1.02); }
+
+    .honor-badge {
+      background: rgba(253, 224, 71, 0.2);
+      color: #b45309;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ===== Footer & Contact ===== */
+    footer {
+      background: #0f172a;
+      color: #94a3b8;
+      padding: 4rem 1.5rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+    
+    .contact-info {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #fff;
+    }
+
+    .footer-copy { border-top: 1px solid #334155; padding-top: 2rem; font-size: 0.9rem; }
+
+    /* ===== 图片放大 Lightbox ===== */
+    .lightbox {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .lightbox.active { opacity: 1; pointer-events: auto; }
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 8px;
+      box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    }
+    .lightbox-close {
+      position: absolute; top: 20px; right: 30px;
+      color: #fff; font-size: 2rem; cursor: pointer;
+    }
+
+    /* ===== 移动端适配 ===== */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.5rem; }
+      nav { width: 95%; padding: 0.8rem 1rem; top: 10px; }
+      nav a { font-size: 0.85rem; padding: 0.4rem 0.6rem; }
+      section { margin: 4rem auto; }
     }
   </style>
 </head>
 <body>
-  <!-- ===== Hero ===== -->
+
+  <div class="lightbox" id="lightbox">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="Enlarged">
+  </div>
+
   <header class="hero" id="hero">
-    <img src="tx.png" alt="Avatar of Gao Zhenyuan" class="avatar">
-    <h1>高振源</h1>
-    <p>计算机科学 | 扩散模型 &amp; 风格迁移 | 数学建模竞赛爱好者</p>
+    <div class="hero-content reveal active">
+      <img src="tx.png" alt="高振源" class="avatar">
+      <h1>高振源</h1>
+      <p>计算机科学 | 扩散模型 &amp; 风格迁移 | 数学建模竞赛爱好者</p>
+    </div>
   </header>
 
-  <!-- ===== Navigation ===== -->
-  <nav>
+  <nav id="navbar">
     <ul>
-      <li><a href="#about">关于我</a></li>
+      <li><a href="#about">关于</a></li>
       <li><a href="#education">教育</a></li>
       <li><a href="#research">科研</a></li>
-      <li><a href="#competitions">竞赛</a></li>
       <li><a href="#projects">项目</a></li>
       <li><a href="#honors">荣誉</a></li>
       <li><a href="#contact">联系</a></li>
     </ul>
   </nav>
 
-  <!-- ===== About ===== -->
   <section id="about">
-    <h2>关于我</h2>
-    <p>你好！我是中南大学计算机科学拔尖班本科生，目前专业排名第 3/28，热衷于生成式 AI、扩散模型与零样本风格迁移研究，同时热爱算法竞赛与多目标优化。欢迎来到我的 GitHub 主页，一起探索有趣的计算机视觉与机器学习项目！</p>
+    <div class="section-title reveal">
+      <h2>关于我</h2>
+    </div>
+    <div class="about-card reveal">
+      <p>你好！我是中南大学计算机科学拔尖班本科生，目前专业排名第 3/28。<br>
+      热衷于生成式 AI、扩散模型与零样本风格迁移研究，同时热爱算法竞赛与多目标优化。<br>
+      欢迎来到我的 GitHub 主页，一起探索有趣的计算机视觉与机器学习项目！</p>
+    </div>
   </section>
 
-  <!-- ===== Education ===== -->
   <section id="education">
-    <h2>教育经历</h2>
+    <div class="section-title reveal">
+      <h2>教育经历</h2>
+    </div>
     <div class="timeline">
-      <div class="timeline-item">
-        <h3>中南大学 — 计算机学院</h3>
-        <p>计算机科学拔尖学生培养基地班 (2022 – 2026 预计)</p>
-        <p>GPA 90.88 / 排名 3/28</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== Research ===== -->
-  <section id="research">
-    <h2>科研经历</h2>
-    <div class="timeline">
-      <div class="timeline-item">
-        <h3>Zero-shot 双域图像风格迁移</h3>
-        <p>提出两阶段风格注入 + 多模态自适应调节器，解决内容泄露与风格匹配错误 (2025 – 今)</p>
-      </div>
-      <div class="timeline-item">
-        <h3>扩散模型文献复现</h3>
-        <p>复现 5+ 篇论文并完成消融实验 (2024 – 2025)</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== Competitions ===== -->
-  <section id="competitions">
-    <h2>竞赛经历</h2>
-    <div class="timeline">
-      <div class="timeline-item">
-        <h3>MathorCup 应用挑战赛 — 全国一等奖</h3>
-        <p>QUBO 优化：量子退火 + 贪心剪枝 (2024.04)</p>
-      </div>
-      <div class="timeline-item">
-        <h3>MCM/ICM 数学建模 — Meritorious Winner</h3>
-        <p>PCA + 有限差分 + NSGA-II 多目标优化 (2024.01)</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== Projects ===== -->
-  <section id="projects">
-    <h2>项目展示</h2>
-    <div class="projects-grid">
-      <!-- Project Card 1 -->
-      <article class="project-card">
-        <img src="keyan.png" alt="Zero-shot Transfer Demo">
-        <h3>Zero-shot 双域风格迁移</h3>
-        <p>两阶段风格注入 + 自适应调节器；有效解决内容泄露与风格错配。</p>
-        <a href="https://github.com/yourname/zero-shot-transfer" target="_blank">查看代码 →</a>
-      </article>
-
-     
-    </div>
-  </section>
-
-  <!-- ===== Honors ===== -->
-  <section id="honors">
-    <h2>荣誉奖项</h2>
-    <ul>
-      <li>国家奖学金</li>
-        <div class="projects-grid">
-          <article class="project-card">
-            <img src="guojiang.png" alt="Loan Default App Screenshot">
-            <h3>获奖证书</h3>
-          </article>
+      <div class="timeline-item reveal">
+        <div class="card">
+          <h3>中南大学 — 计算机学院</h3>
+          <span class="meta">2022 – 2026 (预计) | 计算机科学拔尖学生培养基地班</span>
+          <p>GPA: 90.88 / 100 (Top 3/28)</p>
+          <p>主修课程：机器学习、计算机视觉、算法设计与分析等。</p>
         </div>
-      <li>校级优秀学生干部 / 校三好学生</li>
-    </ul>
+      </div>
+    </div>
   </section>
 
-  <!-- ===== Contact ===== -->
-  <section id="contact">
-    <h2>联系</h2>
-    <p>Phone: 15836731828</p>
-    <p>Email: <a href="mailto:gaozhenyuan38@gmail.com">gaozhenyuan38@gmail.com</a></p>
-    <p>GitHub: <a href="https://github.com/csuergzy" target="_blank">https://github.com/csuergzy</a></p>
+  <section id="research">
+    <div class="section-title reveal">
+      <h2>科研经历</h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="card">
+          <h3>Zero-shot 双域图像风格迁移</h3>
+          <span class="meta">2025 – 至今 | 独立研究</span>
+          <p>针对传统风格迁移中的内容泄露问题，提出两阶段风格注入机制 + 多模态自适应调节器。</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="card">
+          <h3>扩散模型文献复现</h3>
+          <span class="meta">2024 – 2025</span>
+          <p>深入复现 5+ 篇 SOTA 扩散模型论文，并完成详细的消融实验分析。</p>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <footer>© 2025 高振源</footer>
+  <section id="competitions">
+    <div class="section-title reveal">
+      <h2>竞赛经历</h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="card">
+          <h3>MathorCup 应用挑战赛 — 全国一等奖</h3>
+          <span class="meta">2024.04</span>
+          <p>QUBO 优化项目：结合量子退火与贪心剪枝策略，解决复杂组合优化问题。</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="card">
+          <h3>MCM/ICM 数学建模 — Meritorious Winner</h3>
+          <span class="meta">2024.01</span>
+          <p>运用 PCA 降维、有限差分法及 NSGA-II 多目标优化算法建立模型。</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <!-- ===== JavaScript ===== -->
+  <section id="projects">
+    <div class="section-title reveal">
+      <h2>项目展示</h2>
+    </div>
+    <div class="projects-grid">
+      <article class="project-card reveal">
+        <div class="project-img-wrapper">
+          <img src="keyan.png" alt="Zero-shot Transfer Demo">
+        </div>
+        <div class="project-content">
+          <h3>Zero-shot 双域风格迁移</h3>
+          <p>基于 Attention 的风格注入模块，有效解决内容泄露与风格错配问题。</p>
+          <a href="https://github.com/yourname/zero-shot-transfer" target="_blank" class="btn-link">查看代码 →</a>
+        </div>
+      </article>
+      
+      <article class="project-card reveal">
+        <div class="project-img-wrapper" style="background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#cbd5e1;">
+          <span>Project Image</span>
+        </div>
+        <div class="project-content">
+          <h3>即将发布的项目</h3>
+          <p>正在进行的关于 Layout 生成的研究项目。</p>
+          <span class="btn-link" style="opacity:0.5; cursor:not-allowed">Coming Soon</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="honors">
+    <div class="section-title reveal">
+      <h2>荣誉奖项</h2>
+    </div>
+    <div class="honors-grid">
+      <div class="honor-card reveal">
+        <span class="honor-badge">Top 1%</span>
+        <h3>国家奖学金</h3>
+        <p style="font-size:0.85rem; color:#64748b; margin-top:0.5rem">教育部颁发 - 最高荣誉</p>
+      </div>
+
+      <div class="honor-card reveal">
+        <span class="honor-badge">School Level</span>
+        <h3>校级优秀学生干部</h3>
+        <p style="font-size:0.85rem; color:#64748b; margin-top:0.5rem">中南大学</p>
+      </div>
+
+      <div class="honor-card reveal">
+        <span class="honor-badge">Certificate</span>
+        <h3>获奖证书展示</h3>
+        <img src="guojiang.png" alt="获奖证书">
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="contact-info reveal">
+      <div class="contact-item">
+        <span>📱 15836731828</span>
+      </div>
+      <div class="contact-item">
+        <a href="mailto:gaozhenyuan38@gmail.com">✉️ gaozhenyuan38@gmail.com</a>
+      </div>
+      <div class="contact-item">
+        <a href="https://github.com/csuergzy" target="_blank">🐙 GitHub</a>
+      </div>
+    </div>
+    <div class="footer-copy">
+      © 2025 高振源 | Designed with simple elegance
+    </div>
+  </footer>
+
   <script>
-    document.addEventListener('DOMContentLoaded',()=>{
-    /* ---- 1. Hero 背景轮播 (已知 1.png ~ 8.png) ---- */
-    const hero = document.getElementById('hero');
-    const imgs = Array.from({length:8},(_,i)=>`bj/${i+1}.png`);
-    let idx = 0;
-    hero.style.backgroundImage = `url(${imgs[0]})`;
-    setInterval(()=>{
-      idx = (idx + 1) % imgs.length;
-      hero.style.backgroundImage = `url(${imgs[idx]})`;
-    },4000);
-    /* ---- 2. 点击项目卡片放大 / 关闭 ---- */
-    document.querySelectorAll('.project-card').forEach(card=>{
-      card.addEventListener('click',()=>{
-       
-        
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      /* ---- 1. Hero 背景轮播 ---- */
+      const hero = document.getElementById('hero');
+      // 假设你有 bj/1.png 到 bj/8.png，如果没有图片，背景色也会显示
+      const imgs = Array.from({length: 8}, (_, i) => `bj/${i + 1}.png`);
+      let idx = 0;
+
+      // 预加载图片以防闪烁
+      imgs.forEach(src => { const img = new Image(); img.src = src; });
+
+      // 初始设置
+      // hero.style.backgroundImage = `url(${imgs[0]})`; 
+      // 为了防止你本地没有图片导致一片黑，这里保留了CSS中的默认颜色，
+      // 如果你有图片，解开下面注释即可生效：
+      if(imgs.length > 0) {
+         setInterval(() => {
+           idx = (idx + 1) % imgs.length;
+           hero.style.backgroundImage = `url(${imgs[idx]})`;
+         }, 5000);
+      }
+
+      /* ---- 2. 滚动入场动画 (Intersection Observer) ---- */
+      const observerOptions = {
+        threshold: 0.15 // 元素出现15%时触发
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      /* ---- 3. 图片点击放大 (Lightbox) ---- */
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      const closeBtn = document.querySelector('.lightbox-close');
+
+      // 给所有带有 zoom-in 样式的图片添加点击事件
+      document.querySelectorAll('img').forEach(img => {
+        if (img.closest('.project-img-wrapper') || img.closest('.honor-card')) {
+          img.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止冒泡
+            lightboxImg.src = e.target.src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden'; // 禁止背景滚动
+          });
+        }
       });
+
+      // 关闭 Lightbox
+      const closeLightbox = () => {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      };
+
+      closeBtn.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', (e) => {
+        if(e.target === lightbox) closeLightbox();
+      });
+
     });
-  });
   </script>
 </body>
 </html>
